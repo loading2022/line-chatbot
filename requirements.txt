@@ -1,2 +1,4 @@
 flask
 line-bot-sdk
+PyPDF2
+python-docx
