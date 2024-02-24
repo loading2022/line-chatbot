@@ -15,7 +15,7 @@ from PyPDF2 import PdfReader
 from docx import Document
 #from doc2docx import convert
 
-os.environ['OPENAI_API_KEY']='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'
+os.environ['OPENAI_API_KEY']='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'
 app = Flask(__name__)
 
 channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
