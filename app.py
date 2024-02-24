@@ -24,6 +24,17 @@ def callback():
     body = request.get_data(as_text=True)
     json_data = json.loads(body)
     print(json_data)               # 印出 json_data
+
+    headers = {'Authorization':'Bearer 你的 access token','Content-Type':'application/json'}
+    body = {
+        'replyToken':events[0].replyToken,
+        'messages':[{
+                'type': 'text',
+                'text': '文件上傳成功!'
+            }]
+    }
+    req = requests.request('POST', 'https://api.line.me/v2/bot/message/reply', headers=headers,data=json.dumps(body).encode('utf-8'))
+    print(req.text)
     return 'OK'
 
 """
