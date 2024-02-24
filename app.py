@@ -25,9 +25,9 @@ def callback():
     json_data = json.loads(body)
     print(json_data)               # 印出 json_data
 
-    headers = {'Authorization':'Bearer 你的 access token','Content-Type':'application/json'}
+    headers = {'Authorization':'Bearer {channel_access_token}','Content-Type':'application/json'}
     body = {
-        'replyToken':events[0].replyToken,
+        'replyToken':events.replyToken,
         'messages':[{
                 'type': 'text',
                 'text': '文件上傳成功!'
