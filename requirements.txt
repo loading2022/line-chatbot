@@ -2,9 +2,8 @@ flask
 line-bot-sdk
 openai
 langchain
-faiss-gpu
-faiss-cpu
 python-dotenv
 PyPDF2
 python-docx
 flask-cors
+faiss-cpu
