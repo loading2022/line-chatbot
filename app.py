@@ -37,10 +37,10 @@ def callback():
 
 @handler.add(MessageEvent, message=FileMessage)
 def handle_file_message(event):
-    
-    url = f'https://api-data.line.me/v2/bot/message/{event.message.id}/content'
+    file_id=event.message.id
+    url = f"https://api-data.line.me/v2/bot/message/{file_id}/content"
     headers = {
-        'Authorization': f'Bearer {channel access token}'
+        'Authorization': f'Bearer {channel_access_token}'
     }
     """
     response = requests.get(url, headers=headers)
