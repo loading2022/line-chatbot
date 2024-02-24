@@ -50,7 +50,7 @@ def handle_file_message(event):
     message_content = line_bot_api.get_message_content(event.message.id)
     print(message_content)
     response = requests.get(url, headers=headers)
-    print(response.content.decode('utf-8'))
+    print(response.text)
 
     
     #for chunk in message_content.iter_content():
