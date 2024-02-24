@@ -37,24 +37,25 @@ def callback():
 
 @handler.add(MessageEvent, message=FileMessage)
 def handle_file_message(event):
-    """
-    url = 'https://api-data.line.me/v2/bot/message/{event.message.id}/content'
-    headers = {
-        'Authorization': 'Bearer {channel access token}'
-    }
     
+    url = f'https://api-data.line.me/v2/bot/message/{event.message.id}/content'
+    headers = {
+        'Authorization': f'Bearer {channel access token}'
+    }
+    """
     response = requests.get(url, headers=headers)
     print(response.status_code) #可以檢查回應狀態碼
     print(response.content) #可以取得回應內容
     """
     message_content = line_bot_api.get_message_content(event.message.id)
     print(message_content)
-    if not os.path.exists("uploads"):
-        os.makedirs("uploads")
-    with open(f"uploads/{event.message.id}.pdf", "wb", encoding="utf-8") as file:
-        for chunk in message_content.iter_content():
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=chunk))
-            file.write(chunk)
+    response = requests.get(url, headers=headers)
+    print(response.content.decode('utf-8'))
+
+    
+    #for chunk in message_content.iter_content():
+    #    print(chunk)
+    #    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=chunk))
     #line_bot_api.reply_message(event.reply_token, TextSendMessage(text="File uploaded successfully."))
 
 if __name__ == "__main__":
