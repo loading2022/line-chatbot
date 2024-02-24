@@ -25,14 +25,14 @@ def callback():
     json_data = json.loads(body)
     print(json_data)               # 印出 json_data
 
-    try:
-        signature = request.headers['X-Line-Signature']
-        handler.handle(body, signature)
-        #tk = json_data['events'][0]['replyToken']         # 取得 reply token
-        #text_message = TextSendMessage(text='文件上傳成功!')          # 設定回傳同樣的訊息
-        #line_bot_api.reply_message(tk,text_message)       # 回傳訊息
-    except:
-        print('error')
+    
+    signature = request.headers['X-Line-Signature']
+    handler.handle(body, signature)
+    #tk = json_data['events'][0]['replyToken']         # 取得 reply token
+    #text_message = TextSendMessage(text='文件上傳成功!')          # 設定回傳同樣的訊息
+    #line_bot_api.reply_message(tk,text_message)       # 回傳訊息
+    #except:
+    #    print('error')
     return 'OK'
 
 @handler.add(MessageEvent, message=FileMessage)
