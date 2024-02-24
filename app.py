@@ -3,8 +3,6 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
 import os
-from PyPDF2 import PdfFileReader
-from docx import Document
 
 app = Flask(__name__)
 
@@ -32,35 +30,16 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    message = TextSendMessage(text=event.message.text)
+    line_bot_api.reply_message(event.reply_token, message)
+
+@handler.add(MessageEvent, message=FileMessage)
+def handle_file_message(event):
     message_content = line_bot_api.get_message_content(event.message.id)
-    with open(event.message.file_name, 'wb') as f:
+    with open(f"uploads/{event.message.id}.pdf", "wb") as file:
         for chunk in message_content.iter_content():
-            f.write(chunk)
-
-    if event.message.file_name.endswith('.pdf'):
-        text = get_text_from_pdf(event.message.file_name)
-    elif event.message.file_name.endswith('.docx'):
-        text = get_text_from_docx(event.message.file_name)
-
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text='File received!'))
-    
-def get_text_from_pdf(pdf_path):
-    text = ""
-    with open(pdf_path, 'rb') as file:
-        pdf_reader = PdfFileReader(file)
-        for page_num in range(pdf_reader.numPages):
-            text += pdf_reader.getPage(page_num).extract_text()
-    return text
-
-def get_text_from_docx(docx_path):
-    doc = Document(docx_path)
-    text = ""
-    for paragraph in doc.paragraphs:
-        text += paragraph.text + "\n"
-    return text
-
+            file.write(chunk)
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="File uploaded successfully."))
 
 import os
 if __name__ == "__main__":
