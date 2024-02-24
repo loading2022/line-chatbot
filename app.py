@@ -3,6 +3,7 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import *
 import os
+import requests
 
 app = Flask(__name__)
 
@@ -35,14 +36,25 @@ def handle_message(event):
 
 @handler.add(MessageEvent, message=FileMessage)
 def handle_file_message(event):
-    message_content = line_bot_api.get_message_content(event.message.id)
-    print(message_content)
-    if not os.path.exists("uploads"):
-        os.makedirs("uploads")
-    with open(f"uploads/{event.message.id}.pdf", "wb") as file:
-        for chunk in message_content.iter_content():
-            file.write(chunk)
-    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="File uploaded successfully."))
+    url = 'https://api-data.line.me/v2/bot/message/{event.message.id}/content'
+    headers = {
+        'Authorization': 'Bearer {channel access token}'
+    }
+    
+    response = requests.get(url, headers=headers)
+    print(response.status_code) 可以檢查回應狀態碼
+    print(response.content) 可以取得回應內容
+    
+    
+
+    #message_content = line_bot_api.get_message_content(event.message.id)
+    #print(message_content)
+    #if not os.path.exists("uploads"):
+    #    os.makedirs("uploads")
+    #with open(f"uploads/{event.message.id}.pdf", "wb") as file:
+    #    for chunk in message_content.iter_content():
+    #        file.write(chunk)
+    #line_bot_api.reply_message(event.reply_token, TextSendMessage(text="File uploaded successfully."))
 
 import os
 if __name__ == "__main__":
