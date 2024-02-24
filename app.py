@@ -37,6 +37,8 @@ def handle_message(event):
 def handle_file_message(event):
     message_content = line_bot_api.get_message_content(event.message.id)
     print(message_content)
+    if not os.path.exists("uploads"):
+        os.makedirs("uploads")
     with open(f"uploads/{event.message.id}.pdf", "wb") as file:
         for chunk in message_content.iter_content():
             file.write(chunk)
