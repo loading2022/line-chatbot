@@ -42,7 +42,7 @@ def handle_file_message(event):
     headers = {
         'Authorization': f'Bearer {channel_access_token}'
     }
-     response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers)
     if response.status_code == 200:
         file_content = response.content.decode('utf-8')
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=file_content))
