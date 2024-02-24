@@ -53,6 +53,7 @@ def handle_file_message(event):
         os.makedirs("uploads")
     with open(f"uploads/{event.message.id}.pdf", "wb") as file:
         for chunk in message_content.iter_content():
+            print(chunk)
             file.write(chunk)
     #line_bot_api.reply_message(event.reply_token, TextSendMessage(text="File uploaded successfully."))
 
