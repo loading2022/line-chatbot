@@ -17,7 +17,7 @@ from docx import Document
 
 app = Flask(__name__)
 
-openai_api_key=os.getenv('openai_api_key',None)
+openai_api_key=os.getenv('OPENAI_API_KEY',None)
 channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
 channel_access_token = os.getenv('LINE_CHANNEL_ACCESS_TOKEN', None)
 if channel_secret is None:
