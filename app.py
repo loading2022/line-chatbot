@@ -13,7 +13,7 @@ from langchain.callbacks import get_openai_callback
 from langchain.chat_models import ChatOpenAI
 from PyPDF2 import PdfReader
 from docx import Document
-from doc2docx import convert
+#from doc2docx import convert
 
 os.environ['OPENAI_API_KEY']='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'
 app = Flask(__name__)
