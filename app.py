@@ -42,17 +42,19 @@ def handle_file_message(event):
     headers = {
         'Authorization': f'Bearer {channel_access_token}'
     }
-    """
-    response = requests.get(url, headers=headers)
-    print(response.status_code) #可以檢查回應狀態碼
-    print(response.content) #可以取得回應內容
-    """
-    message_content = line_bot_api.get_message_content(event.message.id)
-    print(message_content)
-    response = requests.get(url, headers=headers)
-    response.encoding = 'utf-8'
-    print(response.text)
-    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response.text))
+     response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        file_content = response.content.decode('utf-8')
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=file_content))
+    else:
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text="Failed to retrieve file content."))
+
+    #message_content = line_bot_api.get_message_content(event.message.id)
+    #print(message_content)
+    #response = requests.get(url, headers=headers)
+    #response.encoding = 'utf-8'
+    #print(response.text)
+    #line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response.text))
     
     #for chunk in message_content.iter_content():
     #    print(chunk)
