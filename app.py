@@ -5,7 +5,17 @@ from linebot.models import *
 import os
 import requests
 import json
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
+from langchain.chains.question_answering import load_qa_chain
+from langchain.callbacks import get_openai_callback
+from langchain.chat_models import ChatOpenAI
+from PyPDF2 import PdfReader
+from docx import Document
+from doc2docx import convert
 
+os.environ['OPENAI_API_KEY']='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'
 app = Flask(__name__)
 
 channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
@@ -18,6 +28,7 @@ if channel_access_token is None:
     sys.exit(1)
 line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
+text=""
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -37,17 +48,54 @@ def callback():
 
 @handler.add(MessageEvent, message=FileMessage)
 def handle_file_message(event):
+    global text
     file_id=event.message.id
     url = f"https://api-data.line.me/v2/bot/message/{file_id}/content"
     headers = {
         'Authorization': f'Bearer {channel_access_token}'
     }
     response = requests.get(url, headers=headers)
+    
     if response.status_code == 200:
         file_content = response.content.decode('utf-8')
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=file_content))
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=file_content+"\n請問問題?"))
+        text+=file_content    
     else:
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text="Failed to retrieve file content."))
+    return text
+
+@handler.add(MessageEvent, message=TextMessage)
+def handle_text_message(event):
+    global text
+    user_message = event.message.text
+    text_splitter = CharacterTextSplitter(
+            separator="\n",
+            chunk_size=1000,
+            chunk_overlap=200,
+            length_function=len
+    )
+    chunks = text_splitter.split_text(text)
+
+    embeddings = OpenAIEmbeddings()
+    knowledge_base = FAISS.from_texts(chunks, embeddings)
+
+    docs = knowledge_base.similarity_search(user_message)
+
+    llm = ChatOpenAI(
+        model_name="gpt-4-1106-preview",
+        temperature=0.4
+    )
+
+    chain = load_qa_chain(llm, chain_type="stuff")
+
+    with get_openai_callback() as cb:
+        response = chain.run(input_documents=docs, question=message)
+
+    response = {'response': response}
+
+    #chat_history.append({'user': user_input, 'assistant': response['response']})
+    print(response)
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="successfully response"))
 
     #message_content = line_bot_api.get_message_content(event.message.id)
     #print(message_content)
