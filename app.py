@@ -50,8 +50,9 @@ def handle_file_message(event):
     message_content = line_bot_api.get_message_content(event.message.id)
     print(message_content)
     response = requests.get(url, headers=headers)
+    response.encoding = 'utf-8'
     print(response.text)
-
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response.text))
     
     #for chunk in message_content.iter_content():
     #    print(chunk)
