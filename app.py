@@ -42,8 +42,8 @@ def handle_file_message(event):
     }
     
     response = requests.get(url, headers=headers)
-    print(response.status_code) 可以檢查回應狀態碼
-    print(response.content) 可以取得回應內容
+    print(response.status_code) #可以檢查回應狀態碼
+    print(response.content) #可以取得回應內容
     
     
 
