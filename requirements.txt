@@ -8,3 +8,4 @@ python-docx
 flask-cors
 faiss-cpu
 langchain-community
+tiktoken
