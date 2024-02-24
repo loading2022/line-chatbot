@@ -58,7 +58,7 @@ def handle_file_message(event):
     
     if response.status_code == 200:
         file_content = response.content.decode('utf-8')
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=file_content+"\n請問問題?"))
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text="文件上傳成功!\n可以開始問相關問題"))
         text+=file_content    
     else:
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text="Failed to retrieve file content."))
@@ -90,7 +90,7 @@ def handle_text_message(event):
     chain = load_qa_chain(llm, chain_type="stuff")
 
     with get_openai_callback() as cb:
-        response = chain.run(input_documents=docs, question=message)
+        response = chain.run(input_documents=docs, question=user_message)
 
     response = {'response': response}
 
