@@ -96,7 +96,7 @@ def handle_text_message(event):
 
     #chat_history.append({'user': user_input, 'assistant': response['response']})
     print(response)
-    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="successfully response"))
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response['response']))
 
     #message_content = line_bot_api.get_message_content(event.message.id)
     #print(message_content)
