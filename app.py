@@ -35,14 +35,9 @@ def callback():
         print('error')
     return 'OK'
 
-"""
-@handler.add(MessageEvent, message=TextMessage)
-def handle_message(event):
-    message = TextSendMessage(text=event.message.text)
-    line_bot_api.reply_message(event.reply_token, message)
-
 @handler.add(MessageEvent, message=FileMessage)
 def handle_file_message(event):
+    """
     url = 'https://api-data.line.me/v2/bot/message/{event.message.id}/content'
     headers = {
         'Authorization': 'Bearer {channel access token}'
@@ -51,20 +46,16 @@ def handle_file_message(event):
     response = requests.get(url, headers=headers)
     print(response.status_code) #可以檢查回應狀態碼
     print(response.content) #可以取得回應內容
-    
-    
-
-    #message_content = line_bot_api.get_message_content(event.message.id)
-    #print(message_content)
-    #if not os.path.exists("uploads"):
-    #    os.makedirs("uploads")
-    #with open(f"uploads/{event.message.id}.pdf", "wb") as file:
-    #    for chunk in message_content.iter_content():
-    #        file.write(chunk)
+    """
+    message_content = line_bot_api.get_message_content(event.message.id)
+    print(message_content)
+    if not os.path.exists("uploads"):
+        os.makedirs("uploads")
+    with open(f"uploads/{event.message.id}.pdf", "wb") as file:
+        for chunk in message_content.iter_content():
+            file.write(chunk)
     #line_bot_api.reply_message(event.reply_token, TextSendMessage(text="File uploaded successfully."))
 
-import os
-"""
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
