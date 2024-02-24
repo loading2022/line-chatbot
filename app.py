@@ -68,6 +68,7 @@ def handle_file_message(event):
 def handle_text_message(event):
     global text
     user_message = event.message.text
+    print(user_message)
     text_splitter = CharacterTextSplitter(
             separator="\n",
             chunk_size=1000,
@@ -80,7 +81,7 @@ def handle_text_message(event):
     knowledge_base = FAISS.from_texts(chunks, embeddings)
 
     docs = knowledge_base.similarity_search(user_message)
-
+    print('ok')
     llm = ChatOpenAI(
         model_name="gpt-4-1106-preview",
         temperature=0.4
