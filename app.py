@@ -30,6 +30,21 @@ line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
 text=""
 
+def get_text_from_pdf(pdf_path):
+    text = ""
+    pdf_reader = PdfReader(BytesIO(file_content))
+    for page in pdf_reader.pages:
+        text += page.extract_text()
+    return text
+
+def get_text_from_docx(docx_path):
+    #doc = Document(docx_path)
+    doc = Document(BytesIO(file_content))
+    text = ""
+    for paragraph in doc.paragraphs:
+        text += paragraph.text + "\n"
+    return text
+
 @app.route("/callback", methods=['POST'])
 def callback():
     body = request.get_data(as_text=True)
@@ -57,12 +72,17 @@ def handle_file_message(event):
     response = requests.get(url, headers=headers)
     
     if response.status_code == 200:
+        file_name = event.message.file_name
         file_content = response.content.decode('utf-8')
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text="文件上傳成功!\n可以開始問相關問題"))
-        text+=file_content    
+        if file_name.endswith('.pdf'):
+            text += get_text_from_pdf(file_content)
+        elif file_name.endswith('.docx'):
+            text += get_text_from_docx(file_content)
+        elif file_name.endswith('.txt'):
+            text+=file_content
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text="文件上傳成功!\n可以開始問相關問題"))   
     else:
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text="Failed to retrieve file content."))
-    return text
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text="讀取文件失敗"))
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
