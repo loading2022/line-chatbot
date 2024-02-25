@@ -33,14 +33,14 @@ text=""
 
 def get_text_from_pdf(pdf_path):
     text = ""
-    pdf_reader = PdfReader(BytesIO(file_content))
+    pdf_reader = PdfReader(BytesIO(pdf_path))
     for page in pdf_reader.pages:
         text += page.extract_text()
     return text
 
 def get_text_from_docx(docx_path):
     #doc = Document(docx_path)
-    doc = Document(BytesIO(file_content))
+    doc = Document(BytesIO(docx_path))
     text = ""
     for paragraph in doc.paragraphs:
         text += paragraph.text + "\n"
