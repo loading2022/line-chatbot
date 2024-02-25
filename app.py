@@ -21,6 +21,7 @@ app = Flask(__name__)
 openai_api_key=os.getenv('OPENAI_API_KEY',None)
 channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
 channel_access_token = os.getenv('LINE_CHANNEL_ACCESS_TOKEN', None)
+
 if channel_secret is None:
     print('Specify LINE_CHANNEL_SECRET as environment variable.')
     sys.exit(1)
@@ -29,7 +30,8 @@ if channel_access_token is None:
     sys.exit(1)
 line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
-text=""
+
+file_contents = {}
 
 def get_text_from_pdf(pdf_path):
     text = ""
@@ -59,8 +61,9 @@ def callback():
 
 @handler.add(MessageEvent, message=FileMessage)
 def handle_file_message(event):
-    global text
+    user_id = event.source.userId
     file_id=event.message.id
+    file_contents[user_id] = ""
     url = f"https://api-data.line.me/v2/bot/message/{file_id}/content"
     headers = {
         'Authorization': f'Bearer {channel_access_token}'
@@ -71,26 +74,25 @@ def handle_file_message(event):
         file_name = event.message.file_name
         file_content = response.content
         if file_name.endswith('.pdf'):
-            text += get_text_from_pdf(file_content)
+            file_contents[user_id] += get_text_from_pdf(file_content)
         elif file_name.endswith('.docx'):
-            text += get_text_from_docx(file_content)
+            file_contents[user_id] += get_text_from_docx(file_content)
         elif file_name.endswith('.txt'):
             file_content = response.content.decode('utf-8')
-            text+=file_content
+            file_contents[user_id] += file_content
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text="文件上傳成功!\n可以開始問相關問題"))   
     else:
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text="讀取文件失敗"))
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
-    global text
     user_message = event.message.text
     print(user_message)
     if user_message=="開啟新對話":
-        text=""
+        file_contents[user_id] = ""
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text='已開啟新對話\n可重新上傳檔案，目前支援 pdf、docx 和 txt 檔'))
     else:
-        if text=="":
+        if file_contents[user_id] =="":
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='請上傳檔案，目前支援 pdf、docx 和 txt 檔'))
         else:
             text_splitter = CharacterTextSplitter(
@@ -99,7 +101,7 @@ def handle_text_message(event):
                     chunk_overlap=200,
                     length_function=len
             )
-            chunks = text_splitter.split_text(text)
+            chunks = text_splitter.split_text(file_contents[user_id])
         
             embeddings = OpenAIEmbeddings()
             knowledge_base = FAISS.from_texts(chunks, embeddings)
