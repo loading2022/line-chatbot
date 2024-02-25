@@ -86,8 +86,8 @@ def handle_text_message(event):
     global text
     user_message = event.message.text
     print(user_message)
-    if user_message="":
-        text="開啟新對話"
+    if user_message=="開啟新對話":
+        text=""
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text='已開啟新對話\n可重新上傳檔案，目前支援 pdf、docx 和 txt 檔'))
     else:
         text_splitter = CharacterTextSplitter(
