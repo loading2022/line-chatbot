@@ -86,32 +86,35 @@ def handle_text_message(event):
     global text
     user_message = event.message.text
     print(user_message)
-    text_splitter = CharacterTextSplitter(
-            separator="\n",
-            chunk_size=1000,
-            chunk_overlap=200,
-            length_function=len
-    )
-    chunks = text_splitter.split_text(text)
-
-    embeddings = OpenAIEmbeddings()
-    knowledge_base = FAISS.from_texts(chunks, embeddings)
-
-    docs = knowledge_base.similarity_search(user_message)
-    print('ok')
-    llm = ChatOpenAI(
-        model_name="gpt-4-1106-preview",
-        temperature=0.4
-    )
-
-    chain = load_qa_chain(llm, chain_type="stuff")
-
-    with get_openai_callback() as cb:
-        response = chain.run(input_documents=docs, question=user_message)
-
-    response = {'response': response}
-    print(response)
-    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response['response']))
+    if user_message="":
+        text="開啟新對話"
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text='已開啟新對話\n可重新上傳檔案，目前支援 pdf、docx 和 txt 檔'))
+    else:
+        text_splitter = CharacterTextSplitter(
+                separator="\n",
+                chunk_size=1000,
+                chunk_overlap=200,
+                length_function=len
+        )
+        chunks = text_splitter.split_text(text)
+    
+        embeddings = OpenAIEmbeddings()
+        knowledge_base = FAISS.from_texts(chunks, embeddings)
+    
+        docs = knowledge_base.similarity_search(user_message)
+        llm = ChatOpenAI(
+            model_name="gpt-4-1106-preview",
+            temperature=0.4
+        )
+    
+        chain = load_qa_chain(llm, chain_type="stuff")
+    
+        with get_openai_callback() as cb:
+            response = chain.run(input_documents=docs, question=user_message)
+    
+        response = {'response': response}
+    
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response['response']))
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
