@@ -44,7 +44,7 @@ def get_text_from_docx(docx_path):
     text = ""
     for paragraph in doc.paragraphs:
         text += paragraph.text + "\n"
-    return text.decode('utf-8')
+    return text
 
 @app.route("/callback", methods=['POST'])
 def callback():
