@@ -61,7 +61,7 @@ def callback():
 
 @handler.add(MessageEvent, message=FileMessage)
 def handle_file_message(event):
-    user_id = event.source.userId
+    user_id = event['events'][0]['source']['userId']
     file_id=event.message.id
     file_contents[user_id] = ""
     url = f"https://api-data.line.me/v2/bot/message/{file_id}/content"
@@ -86,7 +86,7 @@ def handle_file_message(event):
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
-    user_id = events.source.userId
+    user_id = event['events'][0]['source']['userId']
     user_message = event.message.text
     print(user_message)
     if user_message=="開啟新對話":
