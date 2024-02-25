@@ -36,7 +36,7 @@ def get_text_from_pdf(pdf_path):
     pdf_reader = PdfReader(BytesIO(pdf_path))
     for page in pdf_reader.pages:
         text += page.extract_text()
-    return text.decode('utf-8')
+    return text
 
 def get_text_from_docx(docx_path):
     #doc = Document(docx_path)
@@ -55,11 +55,6 @@ def callback():
     
     signature = request.headers['X-Line-Signature']
     handler.handle(body, signature)
-    #tk = json_data['events'][0]['replyToken']         # 取得 reply token
-    #text_message = TextSendMessage(text='文件上傳成功!')          # 設定回傳同樣的訊息
-    #line_bot_api.reply_message(tk,text_message)       # 回傳訊息
-    #except:
-    #    print('error')
     return 'OK'
 
 @handler.add(MessageEvent, message=FileMessage)
@@ -80,6 +75,7 @@ def handle_file_message(event):
         elif file_name.endswith('.docx'):
             text += get_text_from_docx(file_content)
         elif file_name.endswith('.txt'):
+            file_content = response.content.decode('utf-8')
             text+=file_content
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text="文件上傳成功!\n可以開始問相關問題"))   
     else:
@@ -114,22 +110,8 @@ def handle_text_message(event):
         response = chain.run(input_documents=docs, question=user_message)
 
     response = {'response': response}
-
-    #chat_history.append({'user': user_input, 'assistant': response['response']})
     print(response)
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response['response']))
-
-    #message_content = line_bot_api.get_message_content(event.message.id)
-    #print(message_content)
-    #response = requests.get(url, headers=headers)
-    #response.encoding = 'utf-8'
-    #print(response.text)
-    #line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response.text))
-    
-    #for chunk in message_content.iter_content():
-    #    print(chunk)
-    #    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=chunk))
-    #line_bot_api.reply_message(event.reply_token, TextSendMessage(text="File uploaded successfully."))
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
