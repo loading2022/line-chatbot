@@ -36,7 +36,7 @@ def get_text_from_pdf(pdf_path):
     pdf_reader = PdfReader(BytesIO(pdf_path))
     for page in pdf_reader.pages:
         text += page.extract_text()
-    return text
+    return text.decode('utf-8')
 
 def get_text_from_docx(docx_path):
     #doc = Document(docx_path)
@@ -44,7 +44,7 @@ def get_text_from_docx(docx_path):
     text = ""
     for paragraph in doc.paragraphs:
         text += paragraph.text + "\n"
-    return text.encode('utf-8')
+    return text.decode('utf-8')
 
 @app.route("/callback", methods=['POST'])
 def callback():
