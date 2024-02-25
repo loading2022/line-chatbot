@@ -86,6 +86,7 @@ def handle_file_message(event):
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
+    user_id = event.source.userId
     user_message = event.message.text
     print(user_message)
     if user_message=="開啟新對話":
