@@ -90,7 +90,7 @@ def handle_text_message(event):
         text=""
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text='已開啟新對話\n可重新上傳檔案，目前支援 pdf、docx 和 txt 檔'))
     else:
-        if text="":
+        if text=="":
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='請上傳檔案，目前支援 pdf、docx 和 txt 檔'))
         else:
             text_splitter = CharacterTextSplitter(
