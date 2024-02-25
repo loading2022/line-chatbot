@@ -43,7 +43,7 @@ def get_text_from_docx(docx_path):
     text = ""
     for paragraph in doc.paragraphs:
         text += paragraph.text + "\n"
-    return text
+    return text.encode('utf-8')
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -73,7 +73,7 @@ def handle_file_message(event):
     
     if response.status_code == 200:
         file_name = event.message.file_name
-        file_content = response.content.decode('utf-8')
+        file_content = response.content
         if file_name.endswith('.pdf'):
             text += get_text_from_pdf(file_content)
         elif file_name.endswith('.docx'):
