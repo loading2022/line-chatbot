@@ -13,6 +13,7 @@ from langchain.callbacks import get_openai_callback
 from langchain.chat_models import ChatOpenAI
 from PyPDF2 import PdfReader
 from docx import Document
+from io import BytesIO
 #from doc2docx import convert
 
 app = Flask(__name__)
