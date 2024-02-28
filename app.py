@@ -31,8 +31,8 @@ if channel_access_token is None:
 line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
 
-file_contents = {}
-
+#file_contents = {}
+text=""
 def get_text_from_pdf(pdf_path):
     text = ""
     pdf_reader = PdfReader(BytesIO(pdf_path))
@@ -61,6 +61,7 @@ def callback():
 
 @handler.add(MessageEvent, message=FileMessage)
 def handle_file_message(event):
+    global text
     user_id = event['events'][0]['source']['userId']
     file_id=event.message.id
     file_contents[user_id] = ""
@@ -74,26 +75,33 @@ def handle_file_message(event):
         file_name = event.message.file_name
         file_content = response.content
         if file_name.endswith('.pdf'):
-            file_contents[user_id] += get_text_from_pdf(file_content)
+            #file_contents[user_id] += get_text_from_pdf(file_content)
+            text+= get_text_from_pdf(file_content)
         elif file_name.endswith('.docx'):
-            file_contents[user_id] += get_text_from_docx(file_content)
+            #file_contents[user_id] += get_text_from_docx(file_content)
+            text+= get_text_from_docx(file_content)
         elif file_name.endswith('.txt'):
             file_content = response.content.decode('utf-8')
-            file_contents[user_id] += file_content
+            #file_contents[user_id] += file_content
+            text+= file_content
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text="文件上傳成功!\n可以開始問相關問題"))   
     else:
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text="讀取文件失敗"))
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
+    global text
     user_id = event['events'][0]['source']['userId']
     user_message = event.message.text
     print(user_message)
     if user_message=="開啟新對話":
-        file_contents[user_id] = ""
+        #file_contents[user_id] = ""
+        text=""
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text='已開啟新對話\n可重新上傳檔案，目前支援 pdf、docx 和 txt 檔'))
     else:
-        if file_contents[user_id] =="":
+        #if file_contents[user_id] =="":
+        #    line_bot_api.reply_message(event.reply_token, TextSendMessage(text='請上傳檔案，目前支援 pdf、docx 和 txt 檔'))
+        if text="":
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='請上傳檔案，目前支援 pdf、docx 和 txt 檔'))
         else:
             text_splitter = CharacterTextSplitter(
