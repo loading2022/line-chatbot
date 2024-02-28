@@ -101,7 +101,7 @@ def handle_text_message(event):
     else:
         #if file_contents[user_id] =="":
         #    line_bot_api.reply_message(event.reply_token, TextSendMessage(text='請上傳檔案，目前支援 pdf、docx 和 txt 檔'))
-        if text="":
+        if text=="":
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='請上傳檔案，目前支援 pdf、docx 和 txt 檔'))
         else:
             text_splitter = CharacterTextSplitter(
