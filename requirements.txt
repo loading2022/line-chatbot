@@ -1,7 +1,7 @@
 flask
 line-bot-sdk
 openai==0.28
-langchain
+langchain==0.1.0
 python-dotenv
 PyPDF2
 python-docx
