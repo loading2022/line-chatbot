@@ -110,8 +110,8 @@ def handle_text_message(event):
                     chunk_overlap=200,
                     length_function=len
             )
-            chunks = text_splitter.split_text(file_contents[user_id])
-        
+            #chunks = text_splitter.split_text(file_contents[user_id])
+            chunks = text_splitter.split_text(text)
             embeddings = OpenAIEmbeddings()
             knowledge_base = FAISS.from_texts(chunks, embeddings)
         
